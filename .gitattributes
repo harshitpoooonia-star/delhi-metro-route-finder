@@ -1,0 +1,5 @@
+# Emscripten output: metro.js stores byte offsets into metro.data, so neither may be touched by line-ending conversion
+web/metro.data binary
+web/metro.js -text
+web/metro.wasm binary
+*.woff2 binary
