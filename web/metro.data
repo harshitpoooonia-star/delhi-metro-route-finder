@@ -1,0 +1,269 @@
+from,to,minutes
+101,102,2
+102,103,2
+103,104,2
+104,105,2
+105,106,2
+106,107,2
+107,108,2
+108,109,3
+109,110,2
+110,111,2
+111,112,2
+112,113,2
+113,114,2
+114,115,3
+115,116,2
+116,117,2
+117,118,2
+118,119,2
+119,120,2
+120,121,2
+201,202,2
+202,203,2
+203,204,2
+204,205,2
+205,206,2
+206,207,2
+207,208,2
+208,209,2
+209,210,2
+210,211,2
+211,212,2
+212,213,2
+213,214,2
+214,215,2
+215,216,2
+216,217,2
+217,218,2
+218,219,2
+219,220,2
+220,221,2
+221,222,2
+222,223,2
+223,224,2
+224,225,2
+225,226,2
+226,227,2
+227,228,2
+228,229,2
+229,230,2
+230,231,2
+231,232,2
+232,233,2
+233,234,3
+234,235,3
+235,236,2
+236,237,2
+237,238,2
+238,239,2
+239,240,2
+240,241,2
+241,242,2
+242,243,2
+243,244,2
+244,245,2
+245,246,2
+246,247,2
+247,248,2
+248,249,2
+249,250,2
+301,302,2
+302,303,2
+303,304,2
+304,305,2
+305,306,2
+306,307,2
+307,308,2
+308,309,2
+309,310,2
+310,311,2
+311,312,2
+312,313,2
+313,314,2
+314,315,2
+315,316,2
+316,317,2
+317,318,2
+318,319,2
+319,320,2
+320,321,2
+321,322,2
+322,323,2
+323,324,2
+324,325,2
+325,326,2
+326,327,2
+327,328,2
+328,329,3
+329,330,2
+330,331,2
+331,332,3
+332,333,3
+333,334,2
+334,335,2
+335,336,2
+336,337,2
+401,402,2
+402,403,2
+403,404,2
+404,405,3
+405,406,3
+406,407,2
+407,408,2
+408,409,2
+409,410,2
+410,411,2
+411,412,2
+412,413,2
+413,414,2
+414,415,2
+415,416,2
+416,417,2
+417,418,2
+418,419,2
+419,420,2
+420,421,2
+421,422,2
+422,423,2
+423,424,2
+424,425,2
+101,246,6
+229,316,4
+325,412,6
+214,401,4
+242,425,5
+id,name,line
+101,Noida Sector 51,Aqua
+102,Noida Sector 50,Aqua
+103,Noida Sector 76,Aqua
+104,Noida Sector 101,Aqua
+105,Noida Sector 81,Aqua
+106,NSEZ,Aqua
+107,Noida Sector 83,Aqua
+108,Noida Sector 137,Aqua
+109,Noida Sector 142,Aqua
+110,Noida Sector 143,Aqua
+111,Noida Sector 144,Aqua
+112,Noida Sector 145,Aqua
+113,Noida Sector 146,Aqua
+114,Noida Sector 147,Aqua
+115,Noida Sector 148,Aqua
+116,Knowledge Park II,Aqua
+117,Pari Chowk,Aqua
+118,Alpha 1,Aqua
+119,Delta 1,Aqua
+120,GNIDA Office,Aqua
+121,Depot,Aqua
+201,Dwarka Sector 21,Blue
+202,Dwarka Sector 8,Blue
+203,Dwarka Sector 9,Blue
+204,Dwarka Sector 10,Blue
+205,Dwarka Sector 11,Blue
+206,Dwarka Sector 12,Blue
+207,Dwarka Sector 13,Blue
+208,Dwarka Sector 14,Blue
+209,Dwarka,Blue
+210,Dwarka Mor,Blue
+211,Nawada,Blue
+212,Uttam Nagar West,Blue
+213,Uttam Nagar East,Blue
+214,Janakpuri West,Blue
+215,Janakpuri East,Blue
+216,Tilak Nagar,Blue
+217,Subhash Nagar,Blue
+218,Tagore Garden,Blue
+219,Rajouri Garden,Blue
+220,Ramesh Nagar,Blue
+221,Moti Nagar,Blue
+222,Kirti Nagar,Blue
+223,Shadipur,Blue
+224,Patel Nagar,Blue
+225,Rajendra Place,Blue
+226,Karol Bagh,Blue
+227,Jhandewalan,Blue
+228,Ramakrishna Ashram Marg,Blue
+229,Rajiv Chowk,Blue
+230,Barakhamba Road,Blue
+231,Mandi House,Blue
+232,Supreme Court,Blue
+233,Indraprastha,Blue
+234,Yamuna Bank,Blue
+235,Akshardham,Blue
+236,Mayur Vihar Phase 1,Blue
+237,Mayur Vihar Extension,Blue
+238,New Ashok Nagar,Blue
+239,Noida Sector 15,Blue
+240,Noida Sector 16,Blue
+241,Noida Sector 18,Blue
+242,Botanical Garden,Blue
+243,Golf Course,Blue
+244,Noida City Centre,Blue
+245,Noida Sector 34,Blue
+246,Noida Sector 52,Blue
+247,Noida Sector 61,Blue
+248,Noida Sector 59,Blue
+249,Noida Sector 62,Blue
+250,Noida Electronic City,Blue
+301,Samaypur Badli,Yellow
+302,Rohini Sector 18-19,Yellow
+303,Haiderpur Badli Mor,Yellow
+304,Jahangirpuri,Yellow
+305,Adarsh Nagar,Yellow
+306,Azadpur,Yellow
+307,Model Town,Yellow
+308,GTB Nagar,Yellow
+309,Vishwavidyalaya,Yellow
+310,Vidhan Sabha,Yellow
+311,Civil Lines,Yellow
+312,Kashmere Gate,Yellow
+313,Chandni Chowk,Yellow
+314,Chawri Bazar,Yellow
+315,New Delhi,Yellow
+316,Rajiv Chowk,Yellow
+317,Patel Chowk,Yellow
+318,Central Secretariat,Yellow
+319,Udyog Bhawan,Yellow
+320,Lok Kalyan Marg,Yellow
+321,Jor Bagh,Yellow
+322,Dilli Haat INA,Yellow
+323,AIIMS,Yellow
+324,Green Park,Yellow
+325,Hauz Khas,Yellow
+326,Malviya Nagar,Yellow
+327,Saket,Yellow
+328,Qutab Minar,Yellow
+329,Chhattarpur,Yellow
+330,Sultanpur,Yellow
+331,Ghitorni,Yellow
+332,Arjan Garh,Yellow
+333,Guru Dronacharya,Yellow
+334,Sikanderpur,Yellow
+335,MG Road,Yellow
+336,IFFCO Chowk,Yellow
+337,Millennium City Centre Gurugram,Yellow
+401,Janakpuri West,Magenta
+402,Dabri Mor Janakpuri South,Magenta
+403,Dashrath Puri,Magenta
+404,Palam,Magenta
+405,Sadar Bazar Cantonment,Magenta
+406,Terminal 1 IGI Airport,Magenta
+407,Shankar Vihar,Magenta
+408,Vasant Vihar,Magenta
+409,Munirka,Magenta
+410,RK Puram,Magenta
+411,IIT Delhi,Magenta
+412,Hauz Khas,Magenta
+413,Panchsheel Park,Magenta
+414,Chirag Delhi,Magenta
+415,Greater Kailash,Magenta
+416,Nehru Enclave,Magenta
+417,Kalkaji Mandir,Magenta
+418,Okhla NSIC,Magenta
+419,Sukhdev Vihar,Magenta
+420,Jamia Millia Islamia,Magenta
+421,Okhla Vihar,Magenta
+422,Jasola Vihar Shaheen Bagh,Magenta
+423,Kalindi Kunj,Magenta
+424,Okhla Bird Sanctuary,Magenta
+425,Botanical Garden,Magenta
