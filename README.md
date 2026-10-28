@@ -86,6 +86,8 @@ make wasm     # needs emcc on PATH (Emscripten SDK)
 make serve    # http://localhost:8000
 ```
 
+On Windows, run `C:\Users\you\emsdk\emsdk_env.bat` in the same terminal first so `emcc` is on PATH, then `mingw32-make wasm`.
+
 `web/` is a static site, so it can go on any static host.
 
 ## Code
