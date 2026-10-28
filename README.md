@@ -2,9 +2,9 @@
 
 A menu-driven C program that finds the fastest metro route between two stations in Delhi NCR. CSET333 Problem Solving using C, Bennett University.
 
-**Status: in development.** Target: a working build by mid-November 2026.
+**Status: working.** All features in the proposal are in.
 
-## What it will do
+## What it does
 
 Ask for a source and destination, then print the route stop by stop, flag each line change, and total up stops, travel time and fare. A trip from Knowledge Park II to Rajiv Chowk, for example, needs the Aqua Line and the Blue Line, and the program works out where to switch.
 
@@ -35,7 +35,7 @@ links.txt       from,to,minutes
 
 Adding a station is one new line in a file, no code change.
 
-## Planned features
+## Features
 
 | Feature | What it does |
 |---|---|
@@ -47,12 +47,49 @@ Adding a station is one new line in a file, no code change.
 | Admin mode | Add a station or link and save it to the data files |
 | Error handling | Short messages for unknown names, same source and destination, or no route |
 
-Code is split across `graph.c`, `route.c`, `fileio.c` and `menu.c`, built with GCC.
+## Build and run
+
+```sh
+make          # builds ./metro
+make test     # runs the tests
+./metro       # uses data/; ./metro other-dir to load another network
+```
+
+On Windows, build with MinGW (`mingw32-make`) or run `gcc -std=c11 -o metro src/*.c`.
+
+Sample run, Knowledge Park II to Rajiv Chowk (middle stops cut):
+
+```text
+Route: Knowledge Park II -> Rajiv Chowk
+
+  Knowledge Park II            Aqua
+  Noida Sector 148             Aqua
+  ...
+  Noida Sector 51              Aqua
+  >> change: Aqua -> Blue (walk 6 min)
+  Noida Sector 52              Blue
+  ...
+  Rajiv Chowk                  Blue
+
+Stops: 32  Time: 74 min  Fare: Rs 54
+```
+
+## Code
+
+| File | What's in it |
+|---|---|
+| `src/graph.c` | stations, links, name search, line order |
+| `src/route.c` | Dijkstra, path rebuild, line changes, fare |
+| `src/fileio.c` | loading and saving the data files |
+| `src/menu.c` | the menu, input, admin mode |
+| `src/main.c` | startup |
+
+Interchange stations like Rajiv Chowk exist once per line, joined by a walking link. When you pick one, the search tries every copy and keeps the fastest route.
 
 ## Limits
 
-Timings and fares are simplified. Fares use a distance-based slab system and won't match DMRC exactly. This is a student project, not an official DMRC tool.
+The sample network has 133 stations: the Aqua line, the main Blue line (Dwarka Sector 21 to Noida Electronic City), the Yellow line and the Magenta line from Janakpuri West to Botanical Garden. The Blue branch to Vaishali and the newer Magenta extension aren't in yet. Timings and fares are simplified. Fares go by number of stops (Rs 11 to Rs 64), since the data has minutes but no distances, and won't match DMRC. This is a student project, not an official DMRC tool.
 
 ## Development
 
-Specs live under `specs/`.
+The spec, plan and tasks are in `specs/001-metro-route-finder/`.
