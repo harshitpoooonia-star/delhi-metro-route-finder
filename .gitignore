@@ -9,3 +9,6 @@ test_api.exe
 web/metro.js
 web/metro.wasm
 web/metro.data
+
+.taste-skill/
+.playwright-cli/

@@ -1,16 +1,17 @@
 {
-  "name": "Delhi Metro Route Finder",
-  "short_name": "Metro Route",
+  "name": "NextStop: Delhi Metro routes",
+  "short_name": "NextStop",
   "start_url": "./",
   "display": "standalone",
-  "background_color": "#f6f7f9",
-  "theme_color": "#1f2937",
+  "background_color": "#f2f4f7",
+  "theme_color": "#f2f4f7",
   "icons": [
     {
       "src": "icon.svg",
       "sizes": "any",
-      "type": "image/svg+xml"
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
     }
   ],
-  "description": "Find Delhi Metro routes with line changes, time and fare. Works offline."
+  "description": "Delhi Metro routes with line changes, arrival time and fare, then stop-by-stop guidance. Works offline."
 }

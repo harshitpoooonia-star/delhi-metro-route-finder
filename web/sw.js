@@ -1,8 +1,9 @@
 // Cache everything on first visit so routing works underground with no signal.
 // Bump VERSION whenever any file below changes.
-const VERSION = 'v3';
+const VERSION = 'nextstop-v1';
 const FILES = [
   './', 'index.html', 'style.css', 'app.js', 'manifest.webmanifest', 'icon.svg',
+  'fonts/mukta-400.woff2', 'fonts/mukta-500.woff2', 'fonts/mukta-600.woff2', 'fonts/mukta-700.woff2',
   'metro.js', 'metro.wasm', 'metro.data',
 ];
 
