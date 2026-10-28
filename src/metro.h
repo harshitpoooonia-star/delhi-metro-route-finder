@@ -41,6 +41,9 @@ int net_add_station(Net *g, int id, const char *name, const char *line);
 int net_add_link(Net *g, int from_id, int to_id, int mins);
 int net_has_link(const Net *g, int a, int b);
 int net_match(const Net *g, const char *text, int *out, int max);
+
+/* search.c */
+int net_search(const Net *g, const char *text, int *out, int max);
 int net_has_line(const Net *g, const char *line);
 int line_order(const Net *g, const char *line, int *out, int max);
 int str_ieq(const char *a, const char *b);
@@ -48,6 +51,8 @@ int str_ieq(const char *a, const char *b);
 /* route.c */
 int find_route(const Net *g, int src, int dst, Route *r);
 int find_route_multi(const Net *g, const int *src, int ns, const int *dst, int nd, Route *r);
+int find_route_ex(const Net *g, const int *src, int ns, const int *dst, int nd, int penalty,
+                  Route *r);
 void route_free(Route *r);
 int fare_for(int stops);
 void print_route(const Net *g, const Route *r, FILE *out);

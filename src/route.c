@@ -17,8 +17,12 @@ static int link_mins(const Net *g, int a, int b)
 
 /* Dijkstra from every station in src[] at once, stopping at the first one in dst[] it
    settles. Interchanges exist once per line, so this is how "Rajiv Chowk" means every
-   copy of it without running the search once per pair. 0 ok, -1 no route, -2 same station. */
-int find_route_multi(const Net *g, const int *src, int ns, const int *dst, int nd, Route *r)
+   copy of it without running the search once per pair. Each line change costs `penalty`
+   extra minutes during the search only, so a big penalty gives the route with the fewest
+   changes (and the fastest among those); r->mins is always real time.
+   0 ok, -1 no route, -2 same station. */
+int find_route_ex(const Net *g, const int *src, int ns, const int *dst, int nd, int penalty,
+                  Route *r)
 {
     for (int i = 0; i < ns; i++)
         for (int j = 0; j < nd; j++)
@@ -59,8 +63,9 @@ int find_route_multi(const Net *g, const int *src, int ns, const int *dst, int n
         done[u] = 1;
         for (int j = 0; j < g->st[u].nadj; j++) {
             const Link *l = &g->st[u].adj[j];
-            if (!done[l->to] && dist[u] + l->mins < dist[l->to]) {
-                dist[l->to] = dist[u] + l->mins;
+            int w = l->mins + (is_walk(g, u, l->to) ? penalty : 0);
+            if (!done[l->to] && dist[u] + w < dist[l->to]) {
+                dist[l->to] = dist[u] + w;
                 prev[l->to] = u;
             }
         }
@@ -77,11 +82,13 @@ int find_route_multi(const Net *g, const int *src, int ns, const int *dst, int n
             for (int v = end; v >= 0; v = prev[v])
                 r->path[--k] = v;
             r->len = len;
-            r->mins = dist[end];
+            r->mins = 0;
             r->stops = 0;
-            for (int i = 1; i < len; i++)
+            for (int i = 1; i < len; i++) {
+                r->mins += link_mins(g, r->path[i - 1], r->path[i]);
                 if (!is_walk(g, r->path[i - 1], r->path[i]))
                     r->stops++;
+            }
             r->fare = fare_for(r->stops);
             ret = 0;
         }
@@ -93,9 +100,14 @@ int find_route_multi(const Net *g, const int *src, int ns, const int *dst, int n
     return ret;
 }
 
+int find_route_multi(const Net *g, const int *src, int ns, const int *dst, int nd, Route *r)
+{
+    return find_route_ex(g, src, ns, dst, nd, 0, r);
+}
+
 int find_route(const Net *g, int src, int dst, Route *r)
 {
-    return find_route_multi(g, &src, 1, &dst, 1, r);
+    return find_route_ex(g, &src, 1, &dst, 1, 0, r);
 }
 
 void route_free(Route *r)

@@ -78,7 +78,9 @@ Stops: 32  Time: 74 min  Fare: Rs 54
 
 The same C engine runs in the browser. `src/api.c` wraps routing, search and line view in
 functions that return JSON, and Emscripten compiles it to WebAssembly with `data/` packed in.
-`web/` is a small HTML/JS page on top: station autocomplete, swap button, a line-coloured route,
+`web/` is a small HTML/JS page on top: typo-tolerant station search ("kashmiri gate", "rajiv chok",
+"cp" all work), the fastest route plus a fewest-changes option, the direction of each train
+("towards Dwarka Sector 21"), a line-coloured route strip with change markers, recent trips,
 shareable links (`?from=Rajiv%20Chowk&to=Hauz%20Khas`) and offline use through a service worker.
 
 ```sh
@@ -97,6 +99,7 @@ On Windows, run `C:\Users\you\emsdk\emsdk_env.bat` in the same terminal first so
 | `src/graph.c` | stations, links, name search, line order |
 | `src/route.c` | Dijkstra, path rebuild, line changes, fare |
 | `src/fileio.c` | loading and saving the data files |
+| `src/search.c` | ranked, typo-tolerant station search with aliases |
 | `src/api.c` | JSON functions for the web build |
 | `src/menu.c` | the menu, input, admin mode |
 | `src/main.c` | startup |

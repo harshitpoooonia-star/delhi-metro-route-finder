@@ -2,7 +2,7 @@ CC ?= gcc
 CFLAGS ?= -std=c11 -Wall -Wextra -O2
 EMCC ?= emcc
 
-SRC = src/graph.c src/route.c src/fileio.c src/api.c
+SRC = src/graph.c src/route.c src/fileio.c src/search.c src/api.c
 BIN = metro
 WEB = web
 

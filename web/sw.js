@@ -1,8 +1,8 @@
 // Cache everything on first visit so routing works underground with no signal.
 // Bump VERSION whenever any file below changes.
-const VERSION = 'v1';
+const VERSION = 'v3';
 const FILES = [
-  './', 'index.html', 'style.css', 'app.js', 'manifest.webmanifest',
+  './', 'index.html', 'style.css', 'app.js', 'manifest.webmanifest', 'icon.svg',
   'metro.js', 'metro.wasm', 'metro.data',
 ];
 

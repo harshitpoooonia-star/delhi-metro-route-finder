@@ -44,8 +44,11 @@ static void test_route_json(void)
     assert(has(s, "\"stops\":3"));
     assert(has(s, "\"interchanges\":1"));
     assert(has(s, "{\"at\":\"Charlie\",\"toStation\":\"Charlie\",\"fromLine\":\"Red\",\"toLine\":\"Green\",\"walk\":5}"));
-    assert(has(s, "\"legs\":[{\"line\":\"Red\",\"stations\":[\"Alpha\",\"Bravo\",\"Charlie\"]},"
-                  "{\"line\":\"Green\",\"stations\":[\"Charlie\",\"Foxtrot\"]}]"));
+    assert(has(s, "\"legs\":[{\"line\":\"Red\",\"towards\":\"Delta\",\"stations\":[\"Alpha\",\"Bravo\",\"Charlie\"]},"
+                  "{\"line\":\"Green\",\"towards\":\"Foxtrot\",\"stations\":[\"Charlie\",\"Foxtrot\"]}]"));
+    /* only one sensible trip here, so no second option */
+    assert(!strstr(s, "FEWEST_CHANGES"));
+    assert(has(api_route("Delta", "Alpha"), "\"towards\":\"Alpha\""));
 
     assert(has(api_route("Alpha", "alpha"), "SAME_STATION"));
     assert(has(api_route("Charlie", "charlie"), "SAME_STATION"));
@@ -58,6 +61,8 @@ static void test_search_json(void)
 {
     assert(api_load(FIX) == 8);
     assert(!strcmp(api_search("char"), "[{\"name\":\"Charlie\",\"lines\":[\"Red\",\"Green\"]}]"));
+    /* prefix beats a match further in */
+    assert(!strncmp(api_search("a"), "[{\"name\":\"Alpha\"", 16));
     assert(!strcmp(api_search("zzz"), "[]"));
     assert(!strcmp(api_lines(), "[\"Red\",\"Green\",\"Grey\"]"));
     const char *red = api_line("red");
@@ -71,7 +76,37 @@ static void test_escape(void)
 {
     assert(api_load(FIX) == 8);
     /* names can't hold commas, but quotes must still come out as valid JSON */
-    assert(has(api_route("Al\"pha", "Delta"), "\"message\":\"Al\\\"pha\""));
+    assert(has(api_route("Zu\"lu", "Delta"), "\"message\":\"Zu\\\"lu\""));
+    api_free();
+}
+
+static const char *first_hit(const char *q)
+{
+    static char name[64];
+    const char *s = api_search(q);
+    const char *p = strstr(s, "\"name\":\"");
+    if (!p)
+        return "";
+    p += 8;
+    size_t n = strcspn(p, "\"");
+    memcpy(name, p, n);
+    name[n] = 0;
+    return name;
+}
+
+static void test_fuzzy(void)
+{
+    assert(api_load("data") > 100);
+    assert(!strcmp(first_hit("kashmiri gate"), "Kashmere Gate"));
+    assert(!strcmp(first_hit("rajiv chok"), "Rajiv Chowk"));
+    assert(!strcmp(first_hit("cp"), "Rajiv Chowk"));
+    assert(!strcmp(first_hit("hauz khaas"), "Hauz Khas"));
+    assert(!strcmp(first_hit("qutub minar"), "Qutab Minar"));
+    assert(!strcmp(first_hit("Sec 18"), "Noida Sector 18"));
+    assert(!strcmp(first_hit("botanical"), "Botanical Garden"));
+    assert(!strcmp(api_search("xq"), "[]"));
+    /* typed text that isn't an exact name still routes through the best match */
+    assert(has(api_route("cp", "hauz khaas"), "\"from\":\"Rajiv Chowk\",\"to\":\"Hauz Khas\""));
     api_free();
 }
 
@@ -80,11 +115,25 @@ static void test_sample(void)
 {
     assert(api_load("data") > 100);
     const char *s = api_route("Knowledge Park II", "Rajiv Chowk");
+    char copy[8192];
+    strncpy(copy, s, sizeof copy - 1);
+    copy[sizeof copy - 1] = 0;
+    s = copy;
     assert(has(s, "\"ok\":true"));
     assert(has(s, "\"fromLine\":\"Aqua\",\"toLine\":\"Blue\""));
     assert(has(s, "\"interchanges\":1"));
     /* Hauz Khas sits on Yellow and Magenta; either copy is a valid end */
     assert(has(api_route("Rajiv Chowk", "Hauz Khas"), "\"interchanges\":0"));
+    assert(has(s, "\"line\":\"Aqua\",\"towards\":\"Noida Sector 51\""));
+    assert(has(s, "\"line\":\"Blue\",\"towards\":\"Dwarka Sector 21\""));
+
+    /* fastest goes Blue then Magenta; staying on Blue is the no-change option */
+    s = api_route("Dwarka Sector 21", "Botanical Garden");
+    assert(has(s, "\"kind\":\"FASTEST\""));
+    assert(has(s, "\"kind\":\"FEWEST_CHANGES\""));
+    const char *few = strstr(s, "FEWEST_CHANGES");
+    assert(has(few, "\"interchanges\":0"));
+    assert(has(few, "\"towards\":\"Noida Electronic City\""));
     api_free();
 }
 
@@ -94,6 +143,7 @@ int main(void)
     test_route_json();
     test_search_json();
     test_escape();
+    test_fuzzy();
     test_sample();
     puts("api tests passed");
     return 0;

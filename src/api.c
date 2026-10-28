@@ -135,52 +135,73 @@ EXPORT void api_free(void)
     out.len = out.cap = 0;
 }
 
-EXPORT const char *api_route(const char *from, const char *to)
+/* exact name first; otherwise the best search hit, so "cp" or "rajiv chok" still routes */
+static int resolve(const char *text, int *grp)
 {
-    int a[MAXG], b[MAXG];
-    int na = station_group(&net, from, a, MAXG), nb = station_group(&net, to, b, MAXG);
-    if (!na)
-        return fail("UNKNOWN_STATION", from);
-    if (!nb)
-        return fail("UNKNOWN_STATION", to);
-    if (str_ieq(from, to))
-        return fail("SAME_STATION", "start and end are the same");
+    int n = station_group(&net, text, grp, MAXG);
+    if (n)
+        return n;
+    int top;
+    if (net_search(&net, text, &top, 1) != 1)
+        return 0;
+    return station_group(&net, net.st[top].name, grp, MAXG);
+}
 
-    Route r = {0};
-    if (find_route_multi(&net, a, na, b, nb, &r) != 0)
-        return fail("NO_ROUTE", "no route between these stations");
+/* the terminal a train from a to b on this line is heading for */
+static int towards(int a, int b, int *ord, int n)
+{
+    int ia = -1, ib = -1;
+    for (int i = 0; i < n; i++) {
+        if (!strcmp(net.st[ord[i]].name, net.st[a].name))
+            ia = i;
+        if (!strcmp(net.st[ord[i]].name, net.st[b].name))
+            ib = i;
+    }
+    if (ia < 0 || ib < 0)
+        return -1;
+    return ib > ia ? ord[n - 1] : ord[0];
+}
 
-    begin();
-    raw("{\"ok\":true,\"from\":");
-    str(net.st[r.path[0]].name);
-    raw(",\"to\":");
-    str(net.st[r.path[r.len - 1]].name);
-    fmt(",\"stops\":%d,\"minutes\":%d,\"fare\":%d", r.stops, r.mins, r.fare);
+static void option(const char *kind, const Route *r, int *ord)
+{
+    int changes = 0;
+    for (int i = 1; i < r->len; i++)
+        if (is_walk(r->path[i - 1], r->path[i]))
+            changes++;
+    raw("{\"kind\":");
+    str(kind);
+    fmt(",\"stops\":%d,\"minutes\":%d,\"fare\":%d,\"interchanges\":%d", r->stops, r->mins,
+        r->fare, changes);
 
     /* legs split at walk links; each change records both ends so a walkway
        like Noida Sector 51 -> 52 can name both stations */
-    raw(",\"legs\":[{\"line\":");
-    str(net.st[r.path[0]].line);
-    raw(",\"stations\":[");
-    str(net.st[r.path[0]].name);
-    int changes = 0;
-    for (int i = 1; i < r.len; i++) {
-        int p = r.path[i - 1], c = r.path[i];
-        if (is_walk(p, c)) {
-            raw("]},{\"line\":");
-            str(net.st[c].line);
-            raw(",\"stations\":[");
-            str(net.st[c].name);
-            changes++;
-        } else {
+    raw(",\"legs\":[");
+    int start = 0;
+    for (int i = 1; i <= r->len; i++) {
+        if (i < r->len && !is_walk(r->path[i - 1], r->path[i]))
+            continue;
+        int a = r->path[start], b = r->path[i - 1];
+        if (start)
             raw(",");
-            str(net.st[c].name);
+        raw("{\"line\":");
+        str(net.st[a].line);
+        int n = line_order(&net, net.st[a].line, ord, net.n);
+        int t = towards(a, b, ord, n);
+        raw(",\"towards\":");
+        str(t >= 0 ? net.st[t].name : "");
+        raw(",\"stations\":[");
+        for (int k = start; k < i; k++) {
+            if (k > start)
+                raw(",");
+            str(net.st[r->path[k]].name);
         }
+        raw("]}");
+        start = i;
     }
-    raw("]}],\"changes\":[");
+    raw("],\"changes\":[");
     int first = 1;
-    for (int i = 1; i < r.len; i++) {
-        int p = r.path[i - 1], c = r.path[i];
+    for (int i = 1; i < r->len; i++) {
+        int p = r->path[i - 1], c = r->path[i];
         if (!is_walk(p, c))
             continue;
         raw(first ? "{" : ",{");
@@ -195,16 +216,61 @@ EXPORT const char *api_route(const char *from, const char *to)
         str(net.st[c].line);
         fmt(",\"walk\":%d}", walk_mins(p, c));
     }
-    fmt("],\"interchanges\":%d}", changes);
-    route_free(&r);
+    raw("]}");
+}
+
+static int same_path(const Route *x, const Route *y)
+{
+    return x->len == y->len && !memcmp(x->path, y->path, x->len * sizeof *x->path);
+}
+
+/* the fastest route, plus the one with the fewest changes when that's a different trip */
+EXPORT const char *api_route(const char *from, const char *to)
+{
+    int a[MAXG], b[MAXG];
+    int na = resolve(from, a), nb = resolve(to, b);
+    if (!na)
+        return fail("UNKNOWN_STATION", from);
+    if (!nb)
+        return fail("UNKNOWN_STATION", to);
+    if (!strcmp(net.st[a[0]].name, net.st[b[0]].name))
+        return fail("SAME_STATION", "start and end are the same");
+
+    Route fast = {0}, few = {0};
+    if (find_route_ex(&net, a, na, b, nb, 0, &fast) != 0)
+        return fail("NO_ROUTE", "no route between these stations");
+    /* bigger than any trip's minutes, so fewer changes always wins */
+    int have_few = find_route_ex(&net, a, na, b, nb, 1000, &few) == 0 && !same_path(&fast, &few);
+
+    int *ord = malloc(net.n * sizeof *ord);
+    if (!ord) {
+        route_free(&fast);
+        route_free(&few);
+        return fail("NO_MEMORY", "out of memory");
+    }
+    begin();
+    raw("{\"ok\":true,\"from\":");
+    str(net.st[fast.path[0]].name);
+    raw(",\"to\":");
+    str(net.st[fast.path[fast.len - 1]].name);
+    raw(",\"options\":[");
+    option("FASTEST", &fast, ord);
+    if (have_few) {
+        raw(",");
+        option("FEWEST_CHANGES", &few, ord);
+    }
+    raw("]}");
+    free(ord);
+    route_free(&fast);
+    route_free(&few);
     return out.s;
 }
 
-/* one entry per station name, with all its lines */
+/* one entry per station name, with all its lines, best match first */
 EXPORT const char *api_search(const char *text)
 {
     int m[MAXG * 4];
-    int n = net_match(&net, text, m, MAXG * 4);
+    int n = net_search(&net, text, m, MAXG * 4);
     begin();
     raw("[");
     int k = 0;
