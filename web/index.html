@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#1f2937">
+<title>Delhi Metro Route Finder</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="top">
+  <a href="./" class="brand">Delhi Metro Route Finder</a>
+  <nav><a href="#lines" id="lines-link">Lines</a></nav>
+</header>
+
+<main class="layout">
+  <section class="panel" aria-labelledby="find-h">
+    <h1 id="find-h" class="sr-only">Find a route</h1>
+    <form id="form" autocomplete="off">
+      <div class="field">
+        <label for="from">From</label>
+        <input id="from" role="combobox" aria-autocomplete="list" aria-expanded="false"
+               aria-controls="from-list" placeholder="e.g. Kashmere Gate">
+        <ul id="from-list" role="listbox" class="suggest" hidden></ul>
+      </div>
+      <button type="button" id="swap" class="swap" aria-label="Swap from and to">&#8645;</button>
+      <div class="field">
+        <label for="to">To</label>
+        <input id="to" role="combobox" aria-autocomplete="list" aria-expanded="false"
+               aria-controls="to-list" placeholder="e.g. Hauz Khas">
+        <ul id="to-list" role="listbox" class="suggest" hidden></ul>
+      </div>
+      <button type="submit" class="go">Find route</button>
+    </form>
+    <p id="status" class="status" role="status" aria-live="polite">Loading network...</p>
+  </section>
+
+  <section id="result" class="panel result" aria-live="polite"></section>
+
+  <section id="lines" class="panel lines" hidden>
+    <h2>Lines</h2>
+    <div id="line-tabs" class="line-tabs"></div>
+    <ol id="line-stations" class="line-stations"></ol>
+  </section>
+</main>
+
+<footer class="foot">
+  Student project, not an official DMRC app. Times and fares are estimates.
+</footer>
+
+<script src="metro.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

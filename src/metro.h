@@ -47,6 +47,7 @@ int str_ieq(const char *a, const char *b);
 
 /* route.c */
 int find_route(const Net *g, int src, int dst, Route *r);
+int find_route_multi(const Net *g, const int *src, int ns, const int *dst, int nd, Route *r);
 void route_free(Route *r);
 int fare_for(int stops);
 void print_route(const Net *g, const Route *r, FILE *out);
@@ -56,6 +57,15 @@ int load_stations(Net *g, const char *path);
 int load_links(Net *g, const char *path);
 int save_stations(const Net *g, const char *path);
 int save_links(const Net *g, const char *path);
+
+/* api.c: JSON in strings, for the web build. Returned strings live until the next call. */
+int api_load(const char *dir);
+void api_free(void);
+const char *api_route(const char *from, const char *to);
+const char *api_search(const char *text);
+const char *api_lines(void);
+const char *api_line(const char *line);
+int station_group(const Net *g, const char *name, int *out, int max);
 
 /* menu.c */
 void run_menu(Net *g, const char *dir);

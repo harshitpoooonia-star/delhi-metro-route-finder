@@ -74,6 +74,20 @@ Route: Knowledge Park II -> Rajiv Chowk
 Stops: 32  Time: 74 min  Fare: Rs 54
 ```
 
+## Web version
+
+The same C engine runs in the browser. `src/api.c` wraps routing, search and line view in
+functions that return JSON, and Emscripten compiles it to WebAssembly with `data/` packed in.
+`web/` is a small HTML/JS page on top: station autocomplete, swap button, a line-coloured route,
+shareable links (`?from=Rajiv%20Chowk&to=Hauz%20Khas`) and offline use through a service worker.
+
+```sh
+make wasm     # needs emcc on PATH (Emscripten SDK)
+make serve    # http://localhost:8000
+```
+
+`web/` is a static site, so it can go on any static host.
+
 ## Code
 
 | File | What's in it |
@@ -81,10 +95,11 @@ Stops: 32  Time: 74 min  Fare: Rs 54
 | `src/graph.c` | stations, links, name search, line order |
 | `src/route.c` | Dijkstra, path rebuild, line changes, fare |
 | `src/fileio.c` | loading and saving the data files |
+| `src/api.c` | JSON functions for the web build |
 | `src/menu.c` | the menu, input, admin mode |
 | `src/main.c` | startup |
 
-Interchange stations like Rajiv Chowk exist once per line, joined by a walking link. When you pick one, the search tries every copy and keeps the fastest route.
+Interchange stations like Rajiv Chowk exist once per line, joined by a walking link. When you pick one, Dijkstra starts from every copy at once (`find_route_multi`), so one run covers all of them.
 
 ## Limits
 

@@ -1,0 +1,28 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build CLI
+        run: make CFLAGS="-std=c11 -Wall -Wextra -Werror -O2"
+      - name: Tests
+        run: make test
+
+  wasm:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mymindstorm/setup-emsdk@v14
+      - name: Build WebAssembly
+        run: make wasm
+      - uses: actions/upload-artifact@v4
+        with:
+          name: web
+          path: web/

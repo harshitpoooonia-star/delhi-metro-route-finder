@@ -89,18 +89,9 @@ static void do_route(const Net *g)
         puts("start and end are the same");
         return;
     }
-    Route best = {0}, r;
-    best.mins = INF;
-    for (int i = 0; i < na; i++)
-        for (int j = 0; j < nb; j++)
-            if (find_route(g, a[i], b[j], &r) == 0) {
-                if (r.mins < best.mins) {
-                    route_free(&best);
-                    best = r;
-                } else {
-                    route_free(&r);
-                }
-            }
+    Route best = {0};
+    if (find_route_multi(g, a, na, b, nb, &best) != 0)
+        best.path = NULL;
     if (!best.path) {
         printf("no route between %s and %s\n", g->st[a[0]].name, g->st[b[0]].name);
         return;
