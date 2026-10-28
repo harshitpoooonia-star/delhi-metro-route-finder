@@ -4,3 +4,11 @@ test_metro
 test_metro.exe
 *.o
 /tmp_*/
+test_api
+test_api.exe
+web/metro.js
+web/metro.wasm
+web/metro.data
+
+.taste-skill/
+.playwright-cli/

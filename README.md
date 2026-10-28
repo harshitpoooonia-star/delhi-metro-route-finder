@@ -1,6 +1,6 @@
-# Delhi Metro Route Finder
+# NextStop
 
-A menu-driven C program that finds the fastest metro route between two stations in Delhi NCR. CSET333 Problem Solving using C, Bennett University.
+NextStop finds Delhi Metro routes and guides you through them stop by stop, in the browser and offline. It started as Delhi Metro Route Finder, a menu-driven C program that finds the fastest metro route between two stations in Delhi NCR. CSET333 Problem Solving using C, Bennett University.
 
 **Status: working.** All features in the proposal are in.
 
@@ -74,6 +74,32 @@ Route: Knowledge Park II -> Rajiv Chowk
 Stops: 32  Time: 74 min  Fare: Rs 54
 ```
 
+## Web version: NextStop
+
+The same C engine runs in the browser. `src/api.c` wraps routing, search and line view in
+functions that return JSON, and Emscripten compiles it to WebAssembly with `data/` packed in.
+`web/` is the NextStop app on top of it:
+
+- forgiving station search ("cp", "sec 18", "kashmiri gate", "hauz khaas"), recent stations on focus, and "did you mean" on a typo
+- the fastest route plus a fewest-changes option, with the arrival time if you leave now
+- a line-coloured route strip with the direction of each train and the line change called out
+- ride mode: one stop at a time, a progress bar, the change flagged before you reach it, and an arrival screen with the trip back one tap away
+- saved trips, recent trips, and sharing the route as plain text for any chat app
+- a Lines tab that draws each line as a strip, lists its interchanges and starts a route from any station
+- shareable links (`?from=Rajiv%20Chowk&to=Hauz%20Khas&pref=fewest-changes`) and offline use through a service worker
+
+Design decisions are in `DESIGN.md`, the feature list and roadmap in `docs/FEATURES.md`, and how
+the 20 UX laws were applied in `docs/UX-LAWS.md`.
+
+```sh
+make wasm     # needs emcc on PATH (Emscripten SDK)
+make serve    # http://localhost:8000
+```
+
+On Windows, run `C:\Users\you\emsdk\emsdk_env.bat` in the same terminal first so `emcc` is on PATH, then `mingw32-make wasm`.
+
+`web/` is a static site, so it can go on any static host.
+
 ## Code
 
 | File | What's in it |
@@ -81,10 +107,12 @@ Stops: 32  Time: 74 min  Fare: Rs 54
 | `src/graph.c` | stations, links, name search, line order |
 | `src/route.c` | Dijkstra, path rebuild, line changes, fare |
 | `src/fileio.c` | loading and saving the data files |
+| `src/search.c` | ranked, typo-tolerant station search with aliases |
+| `src/api.c` | JSON functions for the web build |
 | `src/menu.c` | the menu, input, admin mode |
 | `src/main.c` | startup |
 
-Interchange stations like Rajiv Chowk exist once per line, joined by a walking link. When you pick one, the search tries every copy and keeps the fastest route.
+Interchange stations like Rajiv Chowk exist once per line, joined by a walking link. When you pick one, Dijkstra starts from every copy at once (`find_route_multi`), so one run covers all of them.
 
 ## Limits
 
