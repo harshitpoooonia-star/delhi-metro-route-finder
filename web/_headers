@@ -1,0 +1,4 @@
+# The engine is three files that must stay a matching set (metro.js holds byte offsets into metro.data),
+# so browsers and the CDN must never reuse an old copy of one next to a new copy of another.
+/metro.*
+  Cache-Control: public, max-age=0, must-revalidate

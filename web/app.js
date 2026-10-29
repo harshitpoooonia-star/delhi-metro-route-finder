@@ -709,6 +709,31 @@ function wire() {
 
 $('from').placeholder = $('to').placeholder = 'Loading stations…';
 
+// A device that saved a bad copy of the engine in an earlier visit lands here. Drop every saved copy
+// and reload once so it starts clean, and give a way out if that does not help.
+function engineFailed() {
+  const status = $('status');
+  status.classList.add('error');
+  status.innerHTML = `<p>NextStop couldn't load its station data on this device.</p>
+    <div class="did"><button type="button" class="btn quiet" id="reset-app">Reset and reload</button></div>`;
+  const reset = async () => {
+    try {
+      for (const r of await navigator.serviceWorker.getRegistrations()) await r.unregister();
+      for (const k of await caches.keys()) await caches.delete(k);
+    } catch {}
+    location.reload();
+  };
+  $('reset-app').addEventListener('click', reset);
+  let tried = false;
+  try {
+    tried = sessionStorage.getItem('reset-tried') === '1';
+    sessionStorage.setItem('reset-tried', '1');
+  } catch {}
+  if (!tried) reset();
+}
+
+if (typeof createMetro !== 'function') engineFailed();
+else
 createMetro().then(
   (m) => {
     metro = m;
@@ -725,10 +750,7 @@ createMetro().then(
     wire();
     loadFromUrl();
   },
-  () => {
-    $('status').classList.add('error');
-    $('status').innerHTML = "<p>NextStop couldn't start in this browser. Reload the page, or try an up-to-date browser.</p>";
-  }
+  engineFailed
 );
 
 if ('serviceWorker' in navigator) {
