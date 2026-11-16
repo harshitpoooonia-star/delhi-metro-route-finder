@@ -1,8 +1,21 @@
+<p align="center"><img src="assets/banner.png" alt="NextStop" width="100%"></p>
+
 # NextStop
 
 NextStop finds Delhi Metro routes and guides you through them stop by stop, in the browser and offline. It started as Delhi Metro Route Finder, a menu-driven C program that finds the fastest metro route between two stations in Delhi NCR. CSET333 Problem Solving using C, Bennett University.
 
 **Status: working.** All features in the proposal are in.
+
+**Try it:** [harshitpoooonia-star.github.io/delhi-metro-route-finder](https://harshitpoooonia-star.github.io/delhi-metro-route-finder/). It works offline after the first visit.
+
+## Download
+
+The command-line version is on the [latest release](https://github.com/harshitpoooonia-star/delhi-metro-route-finder/releases/latest):
+
+- `nextstop-cli-windows-x64.zip`: unzip and run `metro.exe` from inside the folder
+- `nextstop-cli-linux-x64.tar.gz`: `tar xzf` it and run `./metro`
+
+Both carry the station data in `data/`, so they work as they are.
 
 ## What it does
 
@@ -121,3 +134,7 @@ The sample network has 133 stations: the Aqua line, the main Blue line (Dwarka S
 ## Development
 
 The spec, plan and tasks are in `specs/001-metro-route-finder/`.
+
+## License
+
+MIT. See [LICENSE](LICENSE).

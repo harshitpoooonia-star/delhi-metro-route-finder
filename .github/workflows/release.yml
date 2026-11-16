@@ -1,0 +1,30 @@
+name: release
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+jobs:
+  cli:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: sudo apt-get update -q && sudo apt-get install -y -q mingw-w64
+      - name: build
+        run: |
+          SRC="src/graph.c src/route.c src/fileio.c src/search.c src/api.c src/menu.c src/main.c"
+          mkdir -p out/win/nextstop out/lin/nextstop
+          x86_64-w64-mingw32-gcc -std=c11 -O2 -static -o out/win/nextstop/metro.exe $SRC
+          gcc -std=c11 -Wall -Wextra -Werror -O2 -o out/lin/nextstop/metro $SRC
+          for d in win lin; do
+            cp -r data LICENSE out/$d/nextstop/
+            printf 'Run metro (metro.exe on Windows) from inside this folder.\nIt reads the stations and links in data/.\n\nhttps://github.com/%s\n' "$GITHUB_REPOSITORY" > out/$d/nextstop/README.txt
+          done
+          (cd out/win && zip -qr ../nextstop-cli-windows-x64.zip nextstop)
+          (cd out/lin && tar czf ../nextstop-cli-linux-x64.tar.gz nextstop)
+      - run: gh release upload "${{ github.event.release.tag_name }}" out/nextstop-cli-windows-x64.zip out/nextstop-cli-linux-x64.tar.gz --clobber
+        env:
+          GH_TOKEN: ${{ github.token }}
